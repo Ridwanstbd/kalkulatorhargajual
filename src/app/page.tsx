@@ -150,6 +150,13 @@ export default function Home() {
             Simpan Produk
           </Button>
         </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-md text-gray-700 italic">
+            *Data yang Anda masukkan hanya disimpan secara lokal di perangkat
+            Anda dan tidak dikirim ke server mana pun.
+          </p>
+        </div>
       </div>
 
       {/* Modal Ingredients */}
