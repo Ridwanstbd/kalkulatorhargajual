@@ -139,7 +139,7 @@ const ProductDetailPDF: React.FC<ProductDetailPDFProps> = ({ product }) => {
         {/* Header: HPP dan Harga Jual */}
         <View style={styles.header}>
           <View style={styles.headerCard}>
-            <Text style={styles.cardTitle}>HPP</Text>
+            <Text style={styles.cardTitle}>Harga Pokok Produksi</Text>
             <Text style={styles.text}>Rp {product.cogm.toFixed(2)}</Text>
           </View>
           <View style={styles.headerCard}>

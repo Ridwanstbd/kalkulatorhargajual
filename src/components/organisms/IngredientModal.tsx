@@ -156,9 +156,7 @@ export const IngredientModal = ({
           <h3 className="text-lg font-medium text-black">Hasil Perhitungan</h3>
         </div>
         <div className="mt-2">
-          <p className="text-sm text-gray-600">
-            COGM (Cost of Good Manufactured)
-          </p>
+          <p className="text-sm text-gray-600">Harga Pokok Produksi</p>
           <p className="text-2xl font-bold text-gray-900">
             Rp {productData.cogm.toFixed(2)}
           </p>

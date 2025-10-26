@@ -238,7 +238,7 @@ export default function ProductsView() {
                     Membuat PDF...
                   </Button>
                 ) : (
-                  <Button className="flex-1">Download PDF</Button>
+                  <Button className="flex-1 w-full">Download PDF</Button>
                 )
               }
             </PDFDownloadLink>
