@@ -163,67 +163,6 @@ export const IngredientModal = ({
         </div>
       </Card>
 
-      {productData.ingredients.length > 0 && (
-        <Card>
-          <h3 className="text-lg font-medium text-black mb-4">
-            Daftar Bahan Baku
-          </h3>
-          <div className="flex flex-col gap-4">
-            {productData.ingredients.map((ingredient) => (
-              <div
-                key={ingredient.id}
-                className="border rounded-lg p-4 bg-white shadow-sm"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-medium text-gray-900">
-                    {ingredient.name}
-                  </h4>
-                  <Button
-                    variant="danger"
-                    onClick={() => removeIngredient(ingredient.id)}
-                    className="text-sm px-2 py-1"
-                  >
-                    Hapus
-                  </Button>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-900">Satuan:</span>
-                    <span className="font-medium text-black">
-                      {ingredient.unit}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Jumlah Beli:</span>
-                    <span className="font-medium text-black">
-                      {ingredient.purchaseQuantity}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Harga Beli:</span>
-                    <span className="font-medium text-black">
-                      Rp {ingredient.purchasePrice.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Kebutuhan:</span>
-                    <span className="font-medium text-black">
-                      {ingredient.requiredQuantity}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Biaya:</span>
-                    <span className="font-medium text-black">
-                      Rp {ingredient.result.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-
       <Card className="mb-4">
         <h3 className="text-lg font-medium text-black mb-4">
           Tambah Bahan Baku
@@ -292,6 +231,67 @@ export const IngredientModal = ({
           Tambah Bahan
         </Button>
       </Card>
+
+      {productData.ingredients.length > 0 && (
+        <Card>
+          <h3 className="text-lg font-medium text-black mb-4">
+            Daftar Bahan Baku
+          </h3>
+          <div className="flex flex-col gap-4">
+            {productData.ingredients.map((ingredient) => (
+              <div
+                key={ingredient.id}
+                className="border rounded-lg p-4 bg-white shadow-sm"
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-medium text-gray-900">
+                    {ingredient.name}
+                  </h4>
+                  <Button
+                    variant="danger"
+                    onClick={() => removeIngredient(ingredient.id)}
+                    className="text-sm px-2 py-1"
+                  >
+                    Hapus
+                  </Button>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-900">Satuan:</span>
+                    <span className="font-medium text-black">
+                      {ingredient.unit}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Jumlah Beli:</span>
+                    <span className="font-medium text-black">
+                      {ingredient.purchaseQuantity}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Harga Beli:</span>
+                    <span className="font-medium text-black">
+                      Rp {ingredient.purchasePrice.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Kebutuhan:</span>
+                    <span className="font-medium text-black">
+                      {ingredient.requiredQuantity}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Biaya:</span>
+                    <span className="font-medium text-black">
+                      Rp {ingredient.result.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </Modal>
   );
 };

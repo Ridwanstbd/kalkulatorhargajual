@@ -225,61 +225,6 @@ export const PriceSchemeModal = ({
         </div>
       </Card>
 
-      {productData.priceSchemes.length > 0 && (
-        <Card>
-          <h3 className="text-lg font-medium text-black mb-4">
-            Daftar Skema Harga
-          </h3>
-          <div className="flex flex-col gap-4">
-            {productData.priceSchemes.map((scheme) => (
-              <div
-                key={scheme.id}
-                className="border rounded-lg p-4 bg-white shadow-sm"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-medium text-gray-900">
-                    {scheme.name} (Level {scheme.level})
-                  </h4>
-                  <Button
-                    variant="danger"
-                    onClick={() => removePriceScheme(scheme.id)}
-                    className="text-sm px-2 py-1"
-                  >
-                    Hapus
-                  </Button>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-900">Harga Beli:</span>
-                    <span className="font-medium text-black">
-                      Rp {scheme.purchasePrice.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Harga Jual:</span>
-                    <span className="font-medium text-black">
-                      Rp {scheme.sellingPrice.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Keuntungan:</span>
-                    <span className="font-medium text-black">
-                      Rp {scheme.profit.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Margin %:</span>
-                    <span className="font-medium text-black">
-                      {scheme.marginPercentage.toFixed(2)}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-
       <Card className="mb-4">
         <h3 className="text-lg font-medium text-black mb-4">
           Tambah Skema Harga
@@ -357,6 +302,60 @@ export const PriceSchemeModal = ({
           Tambah Skema Harga
         </Button>
       </Card>
+      {productData.priceSchemes.length > 0 && (
+        <Card>
+          <h3 className="text-lg font-medium text-black mb-4">
+            Daftar Skema Harga
+          </h3>
+          <div className="flex flex-col gap-4">
+            {productData.priceSchemes.map((scheme) => (
+              <div
+                key={scheme.id}
+                className="border rounded-lg p-4 bg-white shadow-sm"
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-medium text-gray-900">
+                    {scheme.name} (Level {scheme.level})
+                  </h4>
+                  <Button
+                    variant="danger"
+                    onClick={() => removePriceScheme(scheme.id)}
+                    className="text-sm px-2 py-1"
+                  >
+                    Hapus
+                  </Button>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-900">Harga Beli:</span>
+                    <span className="font-medium text-black">
+                      Rp {scheme.purchasePrice.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Harga Jual:</span>
+                    <span className="font-medium text-black">
+                      Rp {scheme.sellingPrice.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Keuntungan:</span>
+                    <span className="font-medium text-black">
+                      Rp {scheme.profit.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Margin %:</span>
+                    <span className="font-medium text-black">
+                      {scheme.marginPercentage.toFixed(2)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </Modal>
   );
 };
