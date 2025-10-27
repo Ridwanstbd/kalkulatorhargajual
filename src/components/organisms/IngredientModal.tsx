@@ -9,6 +9,7 @@ import { Card } from "../atoms/Card";
 import { InputForm } from "../molecules/InputForm";
 import { Button } from "../atoms/Button";
 import { SelectForm } from "../molecules/SelectForm";
+import { Icon } from "../atoms/Icon";
 
 interface IngredientModalProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ export const IngredientModal = ({
     requiredQuantity: "",
   });
 
+  const [isFormVisible, setIsFormVisible] = useState(false);
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
 
   useEffect(() => {
@@ -97,6 +99,7 @@ export const IngredientModal = ({
       purchasePrice: "",
       requiredQuantity: "",
     });
+    setIsFormVisible(false);
   };
 
   const removeIngredient = (id: string) => {
@@ -162,76 +165,6 @@ export const IngredientModal = ({
           </p>
         </div>
       </Card>
-
-      <Card className="mb-4">
-        <h3 className="text-lg font-medium text-black mb-4">
-          Tambah Bahan Baku
-        </h3>
-        <div className="flex flex-col gap-4">
-          <InputForm
-            label="Nama Bahan"
-            placeholder="Nama bahan"
-            value={newIngredient.name}
-            onChange={(e) => {
-              setNewIngredient({ ...newIngredient, name: e.target.value });
-            }}
-            error={errors.name}
-          />
-          <SelectForm
-            label="Satuan"
-            ariaLabel="Unit"
-            value={newIngredient.unit}
-            options={unitOptions}
-            onChange={(e) => {
-              setNewIngredient({ ...newIngredient, unit: e.target.value });
-            }}
-            error={errors.unit}
-          />
-          <InputForm
-            label="Jumlah Beli"
-            type="number"
-            placeholder="Jumlah beli"
-            value={newIngredient.purchaseQuantity}
-            onChange={(e) =>
-              setNewIngredient({
-                ...newIngredient,
-                purchaseQuantity: e.target.value,
-              })
-            }
-            error={errors.purchaseQuantity}
-          />
-          <InputForm
-            label="Harga Beli"
-            type="number"
-            placeholder="Harga beli"
-            value={newIngredient.purchasePrice}
-            onChange={(e) =>
-              setNewIngredient({
-                ...newIngredient,
-                purchasePrice: e.target.value,
-              })
-            }
-            error={errors.purchasePrice}
-          />
-          <InputForm
-            label="Kebutuhan"
-            type="number"
-            placeholder="Kebutuhan"
-            value={newIngredient.requiredQuantity}
-            onChange={(e) =>
-              setNewIngredient({
-                ...newIngredient,
-                requiredQuantity: e.target.value,
-              })
-            }
-            error={errors.requiredQuantity}
-          />
-        </div>
-        <Button onClick={addIngredient} className="w-full mt-4">
-          Tambah Bahan
-        </Button>
-      </Card>
-
       {productData.ingredients.length > 0 && (
         <Card>
           <h3 className="text-lg font-medium text-black mb-4">
@@ -290,6 +223,98 @@ export const IngredientModal = ({
               </div>
             ))}
           </div>
+        </Card>
+      )}
+      {!isFormVisible ? (
+        // TAMPILAN MINIMIZE (Tombol '+')
+        <button
+          onClick={() => setIsFormVisible(true)}
+          className="w-full border-2 border-dashed border-gray-300 rounded-lg p-3 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition mb-4"
+          aria-label="Tambah Bahan Baku"
+        >
+          <Icon name="plus" size={20} />
+          <span className="ml-2 font-medium">Tambah Bahan Baku</span>
+        </button>
+      ) : (
+        // TAMPILAN EXPANDED (Form Lengkap)
+        <Card className="mb-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-black">
+              Tambah Bahan Baku
+            </h3>
+            {/* Tombol 'X' untuk minimize manual */}
+            <button
+              onClick={() => setIsFormVisible(false)}
+              className="text-gray-400 hover:text-gray-600 p-1 rounded-full"
+              aria-label="Tutup form"
+            >
+              <Icon name="x" size={20} />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <InputForm
+              label="Nama Bahan"
+              placeholder="Nama bahan"
+              value={newIngredient.name}
+              onChange={(e) => {
+                setNewIngredient({ ...newIngredient, name: e.target.value });
+              }}
+              error={errors.name}
+            />
+            <SelectForm
+              label="Satuan"
+              ariaLabel="Unit"
+              value={newIngredient.unit}
+              options={unitOptions}
+              onChange={(e) => {
+                setNewIngredient({ ...newIngredient, unit: e.target.value });
+              }}
+              error={errors.unit}
+            />
+            <InputForm
+              label="Jumlah Beli"
+              type="number"
+              placeholder="Jumlah beli"
+              value={newIngredient.purchaseQuantity}
+              onChange={(e) =>
+                setNewIngredient({
+                  ...newIngredient,
+                  purchaseQuantity: e.target.value,
+                })
+              }
+              error={errors.purchaseQuantity}
+            />
+            <InputForm
+              label="Harga Beli"
+              type="number"
+              placeholder="Harga beli"
+              value={newIngredient.purchasePrice}
+              onChange={(e) =>
+                setNewIngredient({
+                  ...newIngredient,
+                  purchasePrice: e.target.value,
+                })
+              }
+              error={errors.purchasePrice}
+            />
+            <InputForm
+              label="Kebutuhan Produk"
+              type="number"
+              placeholder="Kebutuhan"
+              value={newIngredient.requiredQuantity}
+              onChange={(e) =>
+                setNewIngredient({
+                  ...newIngredient,
+                  requiredQuantity: e.target.value,
+                })
+              }
+              error={errors.requiredQuantity}
+            />
+          </div>
+          <Button onClick={addIngredient} className="w-full mt-4">
+            Tambah Bahan
+          </Button>
         </Card>
       )}
     </Modal>

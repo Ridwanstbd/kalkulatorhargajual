@@ -9,6 +9,7 @@ import { Button } from "../atoms/Button";
 import { SelectForm } from "../molecules/SelectForm";
 import { ProductFormData, PriceScheme } from "@/types";
 import { TextAreaForm } from "../molecules/TextAreaForm";
+import { Icon } from "../atoms/Icon";
 
 interface PriceSchemeModalProps {
   isOpen: boolean;
@@ -42,6 +43,7 @@ export const PriceSchemeModal = ({
   );
 
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   // Hitung harga jual tertinggi saat price schemes berubah
   useEffect(() => {
@@ -156,6 +158,7 @@ export const PriceSchemeModal = ({
       directSellingPrice: "",
       notes: "",
     });
+    setIsFormVisible(false);
   };
 
   const removePriceScheme = (id: string) => {
@@ -224,84 +227,6 @@ export const PriceSchemeModal = ({
           </p>
         </div>
       </Card>
-
-      <Card className="mb-4">
-        <h3 className="text-lg font-medium text-black mb-4">
-          Tambah Skema Harga
-        </h3>
-        <div className="flex flex-col gap-4">
-          <InputForm
-            label="Nama Distribusi"
-            placeholder="Nama distribusi"
-            value={newPriceScheme.name}
-            onChange={(e) => {
-              setNewPriceScheme({ ...newPriceScheme, name: e.target.value });
-            }}
-            error={errors.name}
-          />
-
-          <SelectForm
-            label="Tipe Harga Jual"
-            value={newPriceScheme.sellingPriceType}
-            onChange={(e) => {
-              setNewPriceScheme({
-                ...newPriceScheme,
-                sellingPriceType: e.target.value as "margin" | "direct",
-              });
-            }}
-            options={[
-              { value: "margin", label: "Berdasarkan Margin %" },
-              { value: "direct", label: "Input Harga Jual Langsung" },
-            ]}
-          />
-
-          {newPriceScheme.sellingPriceType === "margin" && (
-            <InputForm
-              label="Margin %"
-              type="number"
-              placeholder="Margin %"
-              value={newPriceScheme.marginPercentage}
-              onChange={(e) =>
-                setNewPriceScheme({
-                  ...newPriceScheme,
-                  marginPercentage: e.target.value,
-                })
-              }
-              error={errors.marginPercentage}
-            />
-          )}
-
-          {newPriceScheme.sellingPriceType === "direct" && (
-            <InputForm
-              label="Harga Jual"
-              type="number"
-              placeholder="Harga jual"
-              value={newPriceScheme.directSellingPrice}
-              onChange={(e) =>
-                setNewPriceScheme({
-                  ...newPriceScheme,
-                  directSellingPrice: e.target.value,
-                })
-              }
-              error={errors.directSellingPrice}
-            />
-          )}
-
-          <TextAreaForm
-            htmlFor="notes"
-            label="Catatan"
-            placeholder="Minimal Pembelian 100 pcs"
-            value={newPriceScheme.notes}
-            onChange={(e) =>
-              setNewPriceScheme({ ...newPriceScheme, notes: e.target.value })
-            }
-            error={errors.notes}
-          />
-        </div>
-        <Button onClick={addPriceScheme} className="w-full mt-4">
-          Tambah Skema Harga
-        </Button>
-      </Card>
       {productData.priceSchemes.length > 0 && (
         <Card>
           <h3 className="text-lg font-medium text-black mb-4">
@@ -354,6 +279,105 @@ export const PriceSchemeModal = ({
               </div>
             ))}
           </div>
+        </Card>
+      )}
+
+      {!isFormVisible ? (
+        <button
+          onClick={() => setIsFormVisible(true)}
+          className="w-full border-2 border-dashed border-gray-300 rounded-lg p-3 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition mb-4"
+          aria-label="Tambah Skema Harga"
+        >
+          <Icon name="plus" size={20} />
+          <span className="ml-2 font-medium">Tambah Skema Harga</span>
+        </button>
+      ) : (
+        <Card className="mb-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-black">
+              Tambah Skema Harga
+            </h3>
+            {/* Tombol 'X' untuk minimize manual */}
+            <button
+              onClick={() => setIsFormVisible(false)}
+              className="text-gray-400 hover:text-gray-600 p-1 rounded-full"
+              aria-label="Tutup form"
+            >
+              <Icon name="x" size={20} />
+            </button>
+          </div>
+          <div className="flex flex-col gap-4">
+            <InputForm
+              label="Nama Distribusi"
+              placeholder="Nama distribusi"
+              value={newPriceScheme.name}
+              onChange={(e) => {
+                setNewPriceScheme({ ...newPriceScheme, name: e.target.value });
+              }}
+              error={errors.name}
+            />
+
+            <SelectForm
+              label="Tipe Harga Jual"
+              value={newPriceScheme.sellingPriceType}
+              onChange={(e) => {
+                setNewPriceScheme({
+                  ...newPriceScheme,
+                  sellingPriceType: e.target.value as "margin" | "direct",
+                });
+              }}
+              options={[
+                { value: "margin", label: "Berdasarkan Margin %" },
+                { value: "direct", label: "Input Harga Jual Langsung" },
+              ]}
+            />
+
+            {newPriceScheme.sellingPriceType === "margin" && (
+              <InputForm
+                label="Margin %"
+                type="number"
+                placeholder="Margin %"
+                value={newPriceScheme.marginPercentage}
+                onChange={(e) =>
+                  setNewPriceScheme({
+                    ...newPriceScheme,
+                    marginPercentage: e.target.value,
+                  })
+                }
+                error={errors.marginPercentage}
+              />
+            )}
+
+            {newPriceScheme.sellingPriceType === "direct" && (
+              <InputForm
+                label="Harga Jual"
+                type="number"
+                placeholder="Harga jual"
+                value={newPriceScheme.directSellingPrice}
+                onChange={(e) =>
+                  setNewPriceScheme({
+                    ...newPriceScheme,
+                    directSellingPrice: e.target.value,
+                  })
+                }
+                error={errors.directSellingPrice}
+              />
+            )}
+
+            <TextAreaForm
+              htmlFor="notes"
+              label="Catatan"
+              placeholder="Minimal Pembelian 100 pcs"
+              value={newPriceScheme.notes}
+              onChange={(e) =>
+                setNewPriceScheme({ ...newPriceScheme, notes: e.target.value })
+              }
+              error={errors.notes}
+            />
+          </div>
+          <Button onClick={addPriceScheme} className="w-full mt-4">
+            Tambah Skema Harga
+          </Button>
         </Card>
       )}
     </Modal>

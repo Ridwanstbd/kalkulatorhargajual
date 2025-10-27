@@ -10,6 +10,7 @@ import {
   Mail,
   Phone,
   MapPin,
+  X,
 } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{
@@ -31,6 +32,7 @@ const iconRegistry: Record<string, LucideIcon> = {
   mail: Mail,
   phone: Phone,
   mapPin: MapPin,
+  x: X,
 };
 
 interface IconProps {
