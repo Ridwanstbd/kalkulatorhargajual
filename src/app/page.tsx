@@ -1,179 +1,328 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { PageTemplate } from "@/components/templates/PageTemplate";
-import { Button } from "@/components/atoms/Button";
-import { IngredientModal } from "@/components/organisms/IngredientModal";
-import { PriceSchemeModal } from "@/components/organisms/PriceSchemeModal";
-import { ProductFormData, Product } from "@/types";
-import { v4 as uuidv4 } from "uuid";
-import { Input } from "@/components/atoms/Input";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Header } from "@/components/organisms/Header";
+import { PageTemplate } from "@/components/templates/PageTemplate";
+import { Product, Ingredient, PriceScheme } from "@/types";
+import { Card } from "@/components/atoms/Card";
+import { Button } from "@/components/atoms/Button";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import ProductDetailPDF from "@/components/ProductDetailPDF";
+import { Icon } from "@/components/atoms/Icon";
 
 export default function Home() {
   const router = useRouter();
-  const [productData, setProductData] = useState<ProductFormData>({
-    productName: "",
-    ingredients: [],
-    priceSchemes: [],
-    cogm: 0,
-    price: 0,
-  });
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("id");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // State untuk kontrol modal
-  const [isIngredientModalOpen, setIsIngredientModalOpen] = useState(false);
-  const [isPriceSchemeModalOpen, setIsPriceSchemeModalOpen] = useState(false);
+  // Ambil semua produk dari localStorage
+  useEffect(() => {
+    const storedProducts = localStorage.getItem("products");
+    if (storedProducts) {
+      setProducts(JSON.parse(storedProducts));
+    }
+    setLoading(false);
+  }, []);
 
-  // Simpan produk ke localStorage
-  const saveProduct = () => {
-    if (
-      !productData.productName ||
-      productData.ingredients.length === 0 ||
-      productData.priceSchemes.length === 0
-    ) {
-      alert("Mohon lengkapi semua data");
-      return;
+  // Ambil produk berdasarkan ID jika ada
+  useEffect(() => {
+    if (productId) {
+      const foundProduct = products.find((p) => p.id_product === productId);
+      setProduct(foundProduct || null);
+    } else {
+      setProduct(null);
+    }
+  }, [productId, products]);
+
+  // Fungsi untuk melihat detail produk
+  const viewProductDetail = (id: string) => {
+    router.push(`/?id=${id}`);
+  };
+
+  // Fungsi untuk kembali ke daftar produk
+  const backToList = () => {
+    router.push("/");
+  };
+
+  // Fungsi untuk menghapus produk
+  const deleteProduct = (id: string) => {
+    if (confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
+      const updatedProducts = products.filter(
+        (product) => product.id_product !== id
+      );
+      localStorage.setItem("products", JSON.stringify(updatedProducts));
+      setProducts(updatedProducts);
+
+      // Jika menghapus produk yang sedang dilihat, kembali ke daftar
+      if (productId === id) {
+        router.push("/");
+      }
+    }
+  };
+
+  // Jika sedang memuat data
+  if (loading) {
+    return (
+      <PageTemplate>
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-4">
+          <Header title="Produk" />
+          <div className="text-center py-12">
+            <p className="text-gray-500">Memuat data...</p>
+          </div>
+        </div>
+      </PageTemplate>
+    );
+  }
+
+  // Jika ada ID produk, tampilkan detail
+  if (productId) {
+    if (!product) {
+      return (
+        <PageTemplate>
+          <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-4">
+            <Header title="Detail Produk" />
+            <div className="text-center py-12">
+              <p className="text-gray-500">Produk tidak ditemukan</p>
+              <Button onClick={backToList} className="mt-4">
+                Kembali ke Daftar Produk
+              </Button>
+            </div>
+          </div>
+        </PageTemplate>
+      );
     }
 
-    const product: Product = {
-      id_product: uuidv4(),
-      product_name: productData.productName,
-      cogm: productData.cogm,
-      ingredients: productData.ingredients,
-      price: productData.price,
-      price_scheme: productData.priceSchemes,
-    };
+    return (
+      <PageTemplate>
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-4">
+          {/* Header dengan tombol kembali */}
+          <Header title={`Detail Produk ${product.product_name}`} />
 
-    // Simpan ke localStorage
-    const existingProducts = JSON.parse(
-      localStorage.getItem("products") || "[]"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">HPP</h3>
+              <p className="text-3xl font-bold text-indigo-600">
+                Rp {product.cogm.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-500 mt-1">Harga Pokok Produksi</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Harga Jual
+              </h3>
+              <p className="text-3xl font-bold text-green-600">
+                Rp {product.price.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                Tertinggi dari semua skema harga
+              </p>
+            </div>
+          </div>
+
+          {/* Bahan baku */}
+          <Card className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Bahan Baku
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {product.ingredients.map((ingredient: Ingredient) => (
+                <div
+                  key={ingredient.id}
+                  className="border rounded-lg p-4 bg-white shadow-sm"
+                >
+                  <div className="mb-2">
+                    <h4 className="font-medium text-gray-900">
+                      {ingredient.name}
+                    </h4>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Kebutuhan Produk:</span>
+                      <span className="font-medium text-black">
+                        {ingredient.requiredQuantity} {ingredient.unit}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Biaya:</span>
+                      <span className="font-medium text-black">
+                        Rp {ingredient.result.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Jumlah Pembelian:</span>
+                      <span className="font-medium text-black">
+                        {ingredient.purchaseQuantity} {ingredient.unit}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Harga Pembelian:</span>
+                      <span className="font-medium text-black">
+                        Rp {ingredient.purchasePrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Skema harga */}
+          <Card>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Skema Harga
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 space-y-4">
+              {product.price_scheme.map((scheme: PriceScheme) => (
+                <div
+                  key={scheme.id}
+                  className="border rounded-lg p-4 bg-white shadow-sm"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-gray-900">
+                      {scheme.name} (Level {scheme.level})
+                    </h4>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-900">Harga Beli:</span>
+                      <span className="font-medium text-black">
+                        Rp {scheme.purchasePrice.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Harga Jual:</span>
+                      <span className="font-medium text-black">
+                        Rp {scheme.sellingPrice.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Keuntungan:</span>
+                      <span className="font-medium text-black">
+                        Rp {scheme.profit.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Margin %:</span>
+                      <span className="font-medium text-black">
+                        {scheme.marginPercentage.toFixed(2)}%
+                      </span>
+                    </div>
+                    {scheme.notes && (
+                      <div className="mt-2">
+                        <span className="text-gray-600">Catatan:</span>
+                        <p className="text-sm text-gray-700">{scheme.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <Button
+              variant="danger"
+              onClick={() => deleteProduct(product.id_product)}
+              className="flex-1"
+            >
+              Hapus
+            </Button>
+            <PDFDownloadLink
+              document={<ProductDetailPDF product={product} />}
+              fileName={`${product.product_name.replace(/\s+/g, "_")}.pdf`}
+            >
+              {({ loading }) =>
+                loading ? (
+                  <Button className="flex-1" disabled>
+                    Membuat PDF...
+                  </Button>
+                ) : (
+                  <Button className="flex-1 w-full">Download PDF</Button>
+                )
+              }
+            </PDFDownloadLink>
+            <Button
+              onClick={backToList}
+              variant="secondary"
+              className="flex gap-4 justify-center items-center"
+            >
+              <Icon name="arrow-left" size={20} />
+              Kembali ke Semua Produk
+            </Button>
+          </div>
+        </div>
+      </PageTemplate>
     );
-    existingProducts.push(product);
-    localStorage.setItem("products", JSON.stringify(existingProducts));
+  }
 
-    // Reset form
-    setProductData({
-      productName: "",
-      ingredients: [],
-      priceSchemes: [],
-      cogm: 0,
-      price: 0,
-    });
-
-    router.push(`/products?id=${product.id_product}`);
-  };
-
-  // Reset data produk
-  const resetProduct = () => {
-    setProductData({
-      productName: "",
-      ingredients: [],
-      priceSchemes: [],
-      cogm: 0,
-      price: 0,
-    });
-  };
-
+  // Jika tidak ada ID produk, tampilkan daftar produk
   return (
     <PageTemplate>
       <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-4">
-        <Header title="Hitung Harga Jual" />
+        <Header title="Semua Produk" />
 
-        {/* Input Nama Produk */}
-        <div className="mb-8">
-          <label className="block text-sm font-medium text-gray-800 mb-1">
-            Nama Produk
-          </label>
-          <Input
-            type="text"
-            value={productData.productName}
-            onChange={(e) =>
-              setProductData({ ...productData, productName: e.target.value })
-            }
-            placeholder="Masukkan nama produk"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          />
-        </div>
-
-        {/* Tombol-tombol Modal */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Button
-            onClick={() => setIsIngredientModalOpen(true)}
-            disabled={!productData.productName}
-          >
-            Hitung Harga Pokok Produksi
-          </Button>
-          <Button
-            onClick={() => setIsPriceSchemeModalOpen(true)}
-            disabled={!productData.productName}
-          >
-            Hitung Biaya Diskon
-          </Button>
-        </div>
-
-        {/* Hasil Perhitungan */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">HPP</h3>
-            <p className="text-3xl font-bold text-indigo-600">
-              Rp {productData.cogm.toFixed(2)}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">Harga Pokok Produksi</p>
+        {products.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">Belum ada produk yang tersimpan</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Harga Jual
-            </h3>
-            <p className="text-3xl font-bold text-green-600">
-              Rp {productData.price.toFixed(2)}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              Tertinggi dari semua price scheme
-            </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <Card
+                key={product.id_product}
+                className="hover:shadow-lg transition-shadow"
+              >
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {product.product_name}
+                  </h3>
+                </div>
+
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Harga Pokok Produksi</span>
+                    <span className="font-medium text-black">
+                      Rp {product.cogm.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Harga Jual:</span>
+                    <span className="font-medium text-black">
+                      Rp {product.price.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={() => viewProductDetail(product.id_product)}
+                    variant="secondary"
+                    className="flex-1"
+                  >
+                    Lihat Detail
+                  </Button>
+                </div>
+              </Card>
+            ))}
           </div>
-        </div>
+        )}
 
-        {/* Tombol Simpan dan Reset */}
-        <div className="flex justify-end space-x-4">
-          <Button variant="secondary" onClick={resetProduct}>
-            Reset
-          </Button>
+        {/* Tombol Floating Pencil untuk Mobile dan Tablet */}
+        <div className="fixed bottom-12 right-6">
           <Button
-            onClick={saveProduct}
-            disabled={
-              !productData.productName ||
-              productData.ingredients.length === 0 ||
-              productData.priceSchemes.length === 0
-            }
+            onClick={() => router.push("/products")}
+            variant="primary"
+            rounded="full"
           >
-            Simpan Produk
+            <div className="p-1.5">
+              <Icon name="pencil" size={24} />
+            </div>
           </Button>
-        </div>
-
-        <div className="mt-8 text-center">
-          <p className="text-md text-gray-700 italic">
-            *Data yang Anda masukkan hanya disimpan secara lokal di perangkat
-            Anda dan tidak dikirim ke server mana pun.
-          </p>
         </div>
       </div>
-
-      {/* Modal Ingredients */}
-      <IngredientModal
-        isOpen={isIngredientModalOpen}
-        onClose={() => setIsIngredientModalOpen(false)}
-        productData={productData}
-        setProductData={setProductData}
-      />
-
-      {/* Modal Price Scheme */}
-      <PriceSchemeModal
-        isOpen={isPriceSchemeModalOpen}
-        onClose={() => setIsPriceSchemeModalOpen(false)}
-        productData={productData}
-        setProductData={setProductData}
-      />
     </PageTemplate>
   );
 }

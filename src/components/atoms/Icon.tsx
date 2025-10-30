@@ -11,6 +11,8 @@ import {
   Phone,
   MapPin,
   X,
+  Pencil,
+  ChevronLeft,
 } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{
@@ -33,6 +35,8 @@ const iconRegistry: Record<string, LucideIcon> = {
   phone: Phone,
   mapPin: MapPin,
   x: X,
+  pencil: Pencil,
+  "arrow-left": ChevronLeft,
 };
 
 interface IconProps {

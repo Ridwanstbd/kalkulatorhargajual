@@ -8,8 +8,8 @@ import { DesktopNavMenu } from "../molecules/DesktopNavMenu";
 import { MobileNavMenu } from "../molecules/MobileNavMenu";
 
 const navItems = [
-  { name: "Hitung Harga", href: "/" },
-  { name: "Semua Produk", href: "/products" },
+  { name: "Semua Produk", href: "/" },
+  { name: "Hitung Harga", href: "/products" },
 ];
 
 export const Navbar = () => {
