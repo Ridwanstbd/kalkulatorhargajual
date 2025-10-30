@@ -9,7 +9,7 @@ import { MobileNavMenu } from "../molecules/MobileNavMenu";
 
 const navItems = [
   { name: "Semua Produk", href: "/" },
-  { name: "Hitung Harga", href: "/products" },
+  { name: "Hitung Harga", href: "/create-product" },
 ];
 
 export const Navbar = () => {

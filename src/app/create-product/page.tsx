@@ -10,6 +10,7 @@ import { ProductFormData, Product } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 import { Input } from "@/components/atoms/Input";
 import { Header } from "@/components/organisms/Header";
+import { Icon } from "@/components/atoms/Icon";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -75,6 +76,10 @@ export default function ProductsPage() {
     });
   };
 
+  function backToList(): void {
+    router.push("/");
+  }
+
   return (
     <PageTemplate>
       <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-4">
@@ -135,7 +140,7 @@ export default function ProductsPage() {
         </div>
 
         {/* Tombol Simpan dan Reset */}
-        <div className="flex justify-end space-x-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 justify-end">
           <Button variant="secondary" onClick={resetProduct}>
             Reset
           </Button>
@@ -148,6 +153,14 @@ export default function ProductsPage() {
             }
           >
             Simpan Produk
+          </Button>
+          <Button
+            onClick={backToList}
+            variant="secondary"
+            className="flex gap-4 justify-center items-center"
+          >
+            <Icon name="arrow-left" size={20} />
+            Kembali ke Semua Produk
           </Button>
         </div>
 
