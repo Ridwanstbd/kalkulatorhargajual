@@ -18,10 +18,8 @@ export default function Home() {
   }
 
   return (
-    <PageTemplate>
-      <Suspense fallback={<LoadingFallback />}>
-        <ProductsView />
-      </Suspense>
-    </PageTemplate>
+    <Suspense fallback={<LoadingFallback />}>
+      <ProductsView />
+    </Suspense>
   );
 }
